@@ -68,6 +68,22 @@ form.addEventListener('submit', async function(e) {
   }
 });
 
+// Price calculation
+const deliveryOptions = document.getElementsByName("delivery");
+const priceBox = document.getElementById("priceBox");
+
+
+deliveryOptions.forEach(option => {
+  option.addEventListener("change", function() {
+    if (this.value === "dhaka") {
+      priceBox.textContent = "৯০০ টাকা";
+    } else {
+      priceBox.textContent = "৯৫০ টাকা";
+    }
+  });
+});
+
+
 // ✅ Success Dialog
 function showSuccessDialog() {
   const message = `

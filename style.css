@@ -42,7 +42,7 @@ header .container {
 }
 
 /* Mobile (max width 768px) */
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
   .logo h1 {
     text-align: center;
   }
@@ -296,7 +296,6 @@ nav a:hover {
 
 .price {
   font-size: 24px;
-  margin-bottom: 30px;
 }
 
 .price-amount {
@@ -352,6 +351,40 @@ nav a:hover {
   outline: none;
   border-color: #667eea;
 }
+
+.delivery-group {
+  text-align: left;
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column; /* stack labels vertically */
+  gap: 8px; /* space between options */
+}
+
+/* Each radio label */
+.radio-label {
+  display: inline-flex;        /* make content inline-flex */
+  align-items: center;         /* vertically center button & text */
+  font-size: 16px;
+  cursor: pointer;
+  max-width: 100%;             /* prevent overflow */
+}
+
+/* Radio input */
+.radio-label input[type="radio"] {
+  width: auto;       /* default small size */
+  height: auto;
+  margin: 0 5px 0 0; /* small gap on right side only */
+  flex-shrink: 0;    /* prevent shrinking */
+}
+
+/* Text next to radio */
+.radio-label span {
+  white-space: nowrap; /* keep text on single line */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
 
 .submit-button {
   width: 100%;
