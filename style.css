@@ -41,6 +41,13 @@ header .container {
   margin-bottom: 5px;
 }
 
+/* Mobile (max width 768px) */
+@media (max-width: 768px) {
+  .logo h1 {
+    text-align: center;
+  }
+}
+
 .tagline {
   font-size: 14px;
   opacity: 0.9;
@@ -379,6 +386,13 @@ nav a:hover {
   font-size: 14px;
 }
 
+.delivery-charge-note {
+  text-align: center;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  color: #ff2600;
+  font-size: 14px;
+}
 /* Footer */
 footer {
   background: #2d3748;

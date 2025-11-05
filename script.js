@@ -6,7 +6,7 @@ const form = document.getElementById('orderForm');
 const submitButton = form.querySelector('button[type="submit"]');
 const buttonText = submitButton.querySelector('.button-text');
 
-// Smooth scroll for navigation links
+// Smooth scroll
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', function (e) {
     e.preventDefault();
@@ -20,118 +20,131 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   });
 });
 
-// Form submission handler
+// Form submission
 form.addEventListener('submit', async function(e) {
   e.preventDefault();
-  
-  // Disable button and show loading state
+
+  // Mobile validation
+  const mobile = form.mobile.value.trim();
+  const phoneRegex = /^(01\d{9}|\+8801\d{9})$/;
+
+  if (!phoneRegex.test(mobile)) {
+    showErrorDialog("❌ সঠিক মোবাইল নম্বর দিন (01xxxxxxxxx বা +8801xxxxxxxx)");
+    return;
+  }
+
+  // Disable button
   submitButton.disabled = true;
   buttonText.textContent = 'Submitting Order...';
-  
-  // Prepare form data
+
   const formData = new FormData();
   formData.append('name', form.name.value.trim());
-  formData.append('mobile', form.mobile.value.trim());
+  formData.append('mobile', mobile);
   formData.append('address', form.address.value.trim());
   formData.append('product', form.product.value);
-  
+
   try {
-    // Send data to Google Sheets
     const response = await fetch(SCRIPT_URL, {
       method: 'POST',
       body: formData
     });
-    
+
     const data = await response.json();
     console.log('Response:', data);
-    
+
     if (data.status === 'success') {
-      // Success message
-      showSuccessMessage();
       form.reset();
+      showSuccessDialog();
     } else {
-      // Error from server
       throw new Error(data.message || 'Unknown error occurred');
     }
-    
+
   } catch (error) {
     console.error('Error:', error);
-    showErrorMessage(error.message);
+    showErrorDialog(error.message);
   } finally {
-    // Re-enable button
     submitButton.disabled = false;
     buttonText.textContent = 'Place Order Now';
   }
 });
 
-// Success message function
-function showSuccessMessage() {
+// ✅ Success Dialog
+function showSuccessDialog() {
   const message = `
-    ✅ Order Placed Successfully!
-    
-    Thank you for your order. Our team will contact you shortly to confirm your delivery details.
-    
-    Your YN Rice Cooker 1.8L will be delivered soon!
+আপনার অর্ডার টি নেয়া হয়েছে।
+কিছুক্ষনের মধ্যে আমাদের প্রতিনিতিধি আপনাকে কল করে অর্ডার কন্ফার্ম করবে।
+`;
+
+  const dialog = document.createElement('div');
+  dialog.style = overlayStyle();
+  dialog.innerHTML = `
+    <div style="${boxStyle()}">
+      <p style="margin-bottom:15px;">${message}</p>
+      <button id="okBtn" style="${okBtnStyle()}">OK</button>
+      <button id="waBtn" style="${waBtnStyle()}">WhatsApp</button>
+    </div>
   `;
-  alert(message);
+
+  document.body.appendChild(dialog);
+
+  document.getElementById("okBtn").onclick = () => {
+    document.body.removeChild(dialog);
+  }
+
+  document.getElementById("waBtn").onclick = () => {
+    window.open("https://wa.me/+8801869116691", "_blank");
+  }
 }
 
-// Error message function
-function showErrorMessage(errorMsg) {
-  const message = `
-    ❌ Order Submission Failed
-    
-    ${errorMsg}
-    
-    Please try again or contact us directly.
+// ❌ Error Dialog
+function showErrorDialog(errorMsg) {
+  const dialog = document.createElement('div');
+  dialog.style = overlayStyle();
+  dialog.innerHTML = `
+    <div style="${boxStyle()}">
+      <p style="margin-bottom:15px;color:#c0392b;">${errorMsg}</p>
+      <button id="errorOkBtn" style="${okBtnStyle()}">OK</button>
+    </div>
   `;
-  alert(message);
+
+  document.body.appendChild(dialog);
+
+  document.getElementById("errorOkBtn").onclick = () => {
+    document.body.removeChild(dialog);
+  }
 }
 
-// Phone number validation (Bangladesh format)
-const mobileInput = form.querySelector('input[name="mobile"]');
-mobileInput.addEventListener('input', function(e) {
-  // Remove non-numeric characters
-  let value = e.target.value.replace(/\D/g, '');
-  
-  // Limit to 11 digits for Bangladesh numbers
-  if (value.length > 11) {
-    value = value.slice(0, 11);
-  }
-  
-  e.target.value = value;
-});
+// Shared Styles
+function overlayStyle(){
+  return `
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.6); display:flex; justify-content:center;
+    align-items:center; z-index:9999;
+  `;
+}
 
-// Form validation on blur
-const nameInput = form.querySelector('input[name="name"]');
-const addressInput = form.querySelector('textarea[name="address"]');
+function boxStyle(){
+  return `
+    background:#fff; padding:20px; border-radius:8px;
+    width:300px; text-align:center; font-size:15px;
+  `;
+}
 
-nameInput.addEventListener('blur', function() {
-  if (this.value.trim().length < 3) {
-    this.style.borderColor = '#f56565';
-  } else {
-    this.style.borderColor = '#48bb78';
-  }
-});
+function okBtnStyle(){
+  return `
+    padding:8px 15px;background:#27ae60;color:#fff;border:none;
+    border-radius:4px;margin:5px;cursor:pointer;
+  `;
+}
 
-mobileInput.addEventListener('blur', function() {
-  const phoneRegex = /^01[3-9]\d{8}$/;
-  if (phoneRegex.test(this.value)) {
-    this.style.borderColor = '#48bb78';
-  } else {
-    this.style.borderColor = '#f56565';
-  }
-});
+function waBtnStyle(){
+  return `
+    padding:8px 15px;background:#25D366;color:#fff;border:none;
+    border-radius:4px;margin:5px;cursor:pointer;
+  `;
+}
 
-addressInput.addEventListener('blur', function() {
-  if (this.value.trim().length < 10) {
-    this.style.borderColor = '#f56565';
-  } else {
-    this.style.borderColor = '#48bb78';
-  }
-});
-
-// Add animation on scroll
+// Scroll animations
 const observerOptions = {
   threshold: 0.1,
   rootMargin: '0px 0px -100px 0px'
@@ -146,7 +159,6 @@ const observer = new IntersectionObserver(function(entries) {
   });
 }, observerOptions);
 
-// Observe all feature cards and gallery items
 document.querySelectorAll('.feature-card, .gallery-item, .spec-item').forEach(el => {
   el.style.opacity = '0';
   el.style.transform = 'translateY(20px)';
@@ -154,23 +166,15 @@ document.querySelectorAll('.feature-card, .gallery-item, .spec-item').forEach(el
   observer.observe(el);
 });
 
-// Add loading state styles dynamically
+// Button spinner style
 const style = document.createElement('style');
 style.textContent = `
   .submit-button:disabled .button-text::after {
     content: '';
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    margin-left: 10px;
-    border: 2px solid #fff;
-    border-radius: 50%;
-    border-top-color: transparent;
-    animation: spinner 0.6s linear infinite;
+    display:inline-block;width:12px;height:12px;margin-left:10px;
+    border:2px solid #fff;border-radius:50%;
+    border-top-color:transparent;animation:spinner 0.6s linear infinite;
   }
-  
-  @keyframes spinner {
-    to { transform: rotate(360deg); }
-  }
+  @keyframes spinner { to { transform: rotate(360deg); } }
 `;
 document.head.appendChild(style);
