@@ -1,5 +1,5 @@
 // Google Apps Script URL
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxGrBPjCSpnQ6kWaTsiU-ZVwTzTKQZ3oKu23eoRj2b9lNWb8kbQtf3rCXned9Ga3NG7/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxjrCTJcD4y_GtwSvHumuFmkQFWPmZCPNG9TwsSmiwSH2kVnMA4cClwJSqic2a8Uzbikg/exec';
 
 // Get form elements
 const form = document.getElementById('orderForm');
